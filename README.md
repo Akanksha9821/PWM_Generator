@@ -118,7 +118,7 @@ R7         -12V 0 10k
 ---
 
 ## Simulation Results
-*(Add waveform plots or screenshots here once available.)*
+- Kindly refer report
 
 **Expected Outputs:**
 - Sawtooth waveform at the oscillator stage.  
