@@ -32,7 +32,7 @@ The circuit was designed and simulated in **eSim** using **KiCAD and NGSpice**, 
 ## Circuit Design
 
 ### Schematic
-![PWM Generator Schematic](./PWM%20Generator%20Schematic.pdf)
+![PWM Generator Schematic](./Schematic.JPG)
 
 The design consists of:
 1. A **Schmitt Trigger Oscillator** using CD40106 to produce a sawtooth waveform.  
