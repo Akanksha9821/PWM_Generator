@@ -16,7 +16,7 @@ This project implements a PWM generator circuit in which:
 - The waveform is **buffered by an operational amplifier** for stability.  
 - A **comparator stage** compares the sawtooth with a control voltage (CV input) to produce a PWM signal with an adjustable duty cycle.
 
-The circuit was designed and simulated in **eSim** using the **IHP SG13G2 PDK**, demonstrating cost-effective and reliable PWM generation.
+The circuit was designed and simulated in **eSim** using **KiCAD and NGSpice**, demonstrating cost-effective and reliable PWM generation.
 
 ---
 
@@ -25,8 +25,7 @@ The circuit was designed and simulated in **eSim** using the **IHP SG13G2 PDK**,
 - Operational Amplifiers (Op-Amps)  
 - Resistors and Capacitors for timing and signal conditioning  
 - Variable Control Voltage Source (CV)  
-- eSim (Open-source EDA tool)  
-- IHP SG13G2 PDK  
+- eSim (Open-source EDA tool)   
 
 ---
 
@@ -40,6 +39,82 @@ The design consists of:
 2. **Buffering op-amp** to stabilize the signal.  
 3. **Comparator stage** that generates the PWM output by comparing the sawtooth waveform and the control voltage.
 
+---
+## Netlist
+
+```spice
+* ========================================
+* Netlist generated from PWM Generator Schematic
+* ========================================
+
+* --- Oscillator Stage ---
+* U1 is a CD40106BE Hex Schmitt-Trigger Inverter
+* Only the first inverter (pins 1 & 2) is used for the oscillator.
+* All other inputs (3, 5, 9, 11, 13) and unused outputs (4, 6, 8, 10, 12) are tied to ground.
+U1  OSC_IN OSC_OUT 0 0 0 0 0 0 0 0 0 0 U1_VDD 0 CD40106BE
+    * Pin 1:  OSC_IN (Input A)
+    * Pin 2:  OSC_OUT (Output G)
+    * Pin 3:  0 (Input B)
+    * Pin 4:  0 (Output H)
+    * Pin 5:  0 (Input C)
+    * Pin 6:  0 (Output I)
+    * Pin 7:  0 (VSS)
+    * Pin 8:  0 (Output J)
+    * Pin 9:  0 (Input D)
+    * Pin 10: 0 (Output K)
+    * Pin 11: 0 (Input E)
+    * Pin 12: 0 (Output L)
+    * Pin 13: 0 (Input F)
+    * Pin 14: U1_VDD (VDD)
+
+R1         OSC_IN OSC_OUT 470
+C1         OSC_IN 0 10n
+D1         +12V_B U1_VDD diode
+
+* --- Buffer Stage (Voltage Follower) ---
+X_P1       OSC_OUT BUF_OUT +12V_B 0 BUF_OUT OPAMP_PSPICE
+    * IN+:    OSC_OUT
+    * IN-:    BUF_OUT
+    * VCC+:   +12V_B
+    * VCC-:   0
+    * OUT:    BUF_OUT
+
+* --- Differentiator & Clipper Stage ---
+C2         BUF_OUT DIFF_IN 1u
+X_P2       0 DIFF_IN +12V_B 0 DIFF_OUT OPAMP_PSPICE
+    * IN+:    0
+    * IN-:    DIFF_IN
+    * VCC+:   +12V_B
+    * VCC-:   0
+    * OUT:    DIFF_OUT
+R2         DIFF_IN DIFF_OUT 100k
+D2         0 DIFF_OUT diode
+
+* --- Comparator Stage ---
+V01        SIG_IN 0 signal
+R3         SIG_IN COMP_P 100k
+R4         DIFF_OUT COMP_N 100k
+R5         COMP_N 0 100k
+X_P3       COMP_P COMP_N +12V_B 0 COMP_OUT OPAMP_PSPICE
+    * IN+:    COMP_P
+    * IN-:    COMP_N
+    * VCC+:   +12V_B
+    * VCC-:   0
+    * OUT:    COMP_OUT
+
+* --- Output ---
+R6         COMP_OUT OUT 1k
+
+* --- Unconnected Power Circuit ---
+A1         +12V_A -12V varistor
+R7         -12V 0 10k
+
+* --- Power Nets ---
+* Note: The schematic shows two separate +12V nets.
+* +12V_A = #+12V0101
+* +12V_B = #+12V0102
+* -12V   = #-12V0101
+```
 ---
 
 ## Simulation Results
