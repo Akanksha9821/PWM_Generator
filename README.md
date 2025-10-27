@@ -77,4 +77,4 @@ The design consists of:
 Department of EECE  
 Gandhi Institute of Technology and Management (GITAM)  
 Email: [aakanksh@gitam.in](mailto:aakanksh@gitam.in)
-# PWM_Generator
+
